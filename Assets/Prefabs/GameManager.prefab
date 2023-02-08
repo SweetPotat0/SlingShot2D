@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6597159637843996671
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6597159637843996669}
+  - component: {fileID: 6597159637843996670}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6597159637843996669
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6597159637843996671}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.2041681, y: 0.606073, z: -0.1265808}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6597159637843996670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6597159637843996671}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b2c1191c8fc01245a8cd1378ea169b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LevelCount: 1
+  Level: 0
+  forceMultiplier: 2
+  GameFinishSuccessAudioClip: {fileID: 8300000, guid: 2f858ab422d15b3428669808f8e02d54, type: 3}
+  GameFinishFailAudioClip: {fileID: 8300000, guid: d157d6a8b8f03644292f8cc32144c577, type: 3}
+  PickedStarAudioClip: {fileID: 8300000, guid: 664420fdd92444540b513b915188479b, type: 3}
+  PickedBadStarAudioClip: {fileID: 8300000, guid: e8c435e10a97d014d82ab1a1e9acc686, type: 3}
+  FloorYLocation: -5
+  gameStatus: 0
+  platforms: []
+  stars: []
+  player: {fileID: 0}
+  LevelMenu: {fileID: 0}
