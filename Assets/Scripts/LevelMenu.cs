@@ -34,6 +34,10 @@ public class LevelMenu : MonoBehaviour
     private CanvasGroup GameFinishedMenu;
     [SerializeField]
     private TextMeshProUGUI GlobalSecondsText;
+    [SerializeField]
+    private TextMeshProUGUI HighScoreText;
+    [SerializeField]
+    private GameObject HighScoreTextContainer;
 
     [HideInInspector]
     public event EventHandler StartClicked;
@@ -117,6 +121,12 @@ public class LevelMenu : MonoBehaviour
                 }
         }
         shownMenuType = menuType;
+    }
+
+    public void SetHighScore(float HighScore)
+    {
+        HighScoreTextContainer.SetActive(true);
+        HighScoreText.text = String.Format("{0:0.00}", HighScore) + "s";
     }
 
     public void SetSeconds(float seconds)

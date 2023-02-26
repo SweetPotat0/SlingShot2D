@@ -36,7 +36,6 @@ public class Star : MonoBehaviour
         if (collision.gameObject.layer != LayerMask.NameToLayer("Player")) { return; }
         if (GameManager.gameStatus != GameManager.GameStatus.Running) { return; }
         GameManager.PickedStar(starType);
-        Debug.Log("Hit star!!");
         if (isEnabled)
         {
             isEnabled = false;

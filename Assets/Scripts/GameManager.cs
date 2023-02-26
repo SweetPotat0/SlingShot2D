@@ -52,11 +52,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private AudioSource mainAudioSource;
+    private AudioSource gameManagerAudioSource;
+    private AudioSource mainCameraAudioSource;
     // Start is called before the first frame update
     void Start()
     {
-        mainAudioSource = Camera.main.GetComponent<AudioSource>();
+        mainCameraAudioSource = Camera.main.GetComponent<AudioSource>();
+        gameManagerAudioSource = GetComponent<AudioSource>();
         LevelMenu = FindObjectOfType<LevelMenu>();
         LevelMenu.ExitMenuClicked += LevelMenu_ExitMenuClicked;
         LevelMenu.ExitClicked += LevelMenu_ExitClicked;
@@ -173,17 +175,17 @@ public class GameManager : MonoBehaviour
 
     public void PickedStar(Star.StarType starType)
     {
-        mainAudioSource.loop = false;
+        mainCameraAudioSource.loop = false;
         if (starType == Star.StarType.Time)
         {
-            mainAudioSource.clip = PickedBadStarAudioClip;
+            mainCameraAudioSource.clip = PickedBadStarAudioClip;
         }
         else
         {
-            mainAudioSource.clip = PickedStarAudioClip;
+            mainCameraAudioSource.clip = PickedStarAudioClip;
 
         }
-        mainAudioSource.Play();
+        mainCameraAudioSource.Play();
     }
 
     private GameStatus oldStatus;
@@ -196,6 +198,7 @@ public class GameManager : MonoBehaviour
     }
     void PauseGame()
     {
+        StopBackgroundMusic();
         oldStatus = gameStatus;
         gameStatus = GameStatus.Pause;
         Time.timeScale = 0;
@@ -204,6 +207,7 @@ public class GameManager : MonoBehaviour
 
     void ResumeGame()
     {
+        PlayBackgroundMusic();
         gameStatus = oldStatus;
         Time.timeScale = 1;
     }
@@ -213,22 +217,33 @@ public class GameManager : MonoBehaviour
         PlayBackgroundMusic();
         gameStatus = GameStatus.Running;
         Time.timeScale = 1;
+        float highScore = HighScoreManager.GetHighScore(Level);
+        if (highScore != -1)
+        {
+            LevelMenu.SetHighScore(highScore);
+        }
     }
 
     void PlayBackgroundMusic()
     {
-        mainAudioSource.loop = true;
-        mainAudioSource.clip = BackgroundMusic;
-        mainAudioSource.Play();
+        gameManagerAudioSource.loop = true;
+        gameManagerAudioSource.clip = BackgroundMusic;
+        gameManagerAudioSource.Play();
+    }
+
+    void StopBackgroundMusic()
+    {
+        gameManagerAudioSource.Stop();
     }
 
     public void FinishGame(GameFinishArgs gameFinishArgs)
     {
         gameStatus = GameStatus.Finished;
-        mainAudioSource.loop = false;
+        mainCameraAudioSource.loop = false;
         if (gameFinishArgs.Win)
         {
-            mainAudioSource.clip = GameFinishSuccessAudioClip;
+            HighScoreManager.StoreHighScore(Level,Seconds);
+            mainCameraAudioSource.clip = GameFinishSuccessAudioClip;
             if (LevelCount > Level)
             {
                 LevelMenu.ShowMenu(LevelMenu.MenuType.LevelFinishedMenu);
@@ -240,16 +255,16 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            mainAudioSource.clip = GameFinishFailAudioClip;
+            mainCameraAudioSource.clip = GameFinishFailAudioClip;
             LevelMenu.ShowMenu(LevelMenu.MenuType.LevelFailedMenu);
         }
         if (gameFinishArgs.DelayAudioClip != null)
         {
-            mainAudioSource.PlayDelayed((int)gameFinishArgs.DelayAudioClip);
+            mainCameraAudioSource.PlayDelayed((int)gameFinishArgs.DelayAudioClip);
         }
         else
         {
-            mainAudioSource.Play();
+            mainCameraAudioSource.Play();
         }
     }
 }
