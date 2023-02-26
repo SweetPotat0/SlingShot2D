@@ -21,11 +21,13 @@ public class SlingShotPlayer : MonoBehaviour
     [HideInInspector]
     public AboutTo aboutTo = AboutTo.Nothing;
 
+    public GameObject JumpArrow;
     public float distToGround;
 
     private GameManager gameManager;
     private Rigidbody2D rigidbody;
     private AudioSource audioSource;
+    private Quaternion initRotation;
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +37,7 @@ public class SlingShotPlayer : MonoBehaviour
         rigidbody = GetComponent<Rigidbody2D>();
         audioSource = GetComponent<AudioSource>();
         distToGround = collider.bounds.extents.y;
+        initRotation = JumpArrow.transform.rotation;
     }
 
     // Update is called once per frame
@@ -58,9 +61,25 @@ public class SlingShotPlayer : MonoBehaviour
             //Check if player is falling to infinity
             if (transform.position.y < gameManager.FloorYLocation)
             {
+                Debug.Log("Lost by y");
                 gameManager.FinishGame(new GameManager.GameFinishArgs { Win = false });
             }
         }
+    }
+
+    public void Aim(Vector2 direction)
+    {
+        JumpArrow.SetActive(true);
+        JumpArrow.transform.localScale = new Vector2(direction.magnitude/280, JumpArrow.transform.localScale.y);
+        direction.Normalize();
+        float angle = -Vector2.SignedAngle(Vector2.right, direction.normalized);
+        Debug.Log($"Angle: {angle}");
+        JumpArrow.transform.eulerAngles = new Vector3(JumpArrow.transform.eulerAngles.x, JumpArrow.transform.eulerAngles.y, angle);
+    }
+
+    public void HideArrow()
+    {
+        JumpArrow.SetActive(false);
     }
 
     public void Jump(Vector2 force)

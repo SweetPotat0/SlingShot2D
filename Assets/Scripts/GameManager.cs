@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,11 +21,13 @@ public class GameManager : MonoBehaviour
 
     public int LevelCount = 1;
     public int Level;
-    public float forceMultiplier = 1;
+    public float jumpForceMultiplier = 5;
+    public float maxJumpForce = 600;
     public AudioClip GameFinishSuccessAudioClip;
     public AudioClip GameFinishFailAudioClip;
     public AudioClip PickedStarAudioClip;
     public AudioClip PickedBadStarAudioClip;
+    public AudioClip BackgroundMusic;
     public float FloorYLocation = -5;
     public float MaxLevelTime = 15;
 
@@ -49,11 +52,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private AudioSource audioSource;
+    private AudioSource mainAudioSource;
     // Start is called before the first frame update
     void Start()
     {
-        audioSource = Camera.main.GetComponent<AudioSource>();
+        mainAudioSource = Camera.main.GetComponent<AudioSource>();
         LevelMenu = FindObjectOfType<LevelMenu>();
         LevelMenu.ExitMenuClicked += LevelMenu_ExitMenuClicked;
         LevelMenu.ExitClicked += LevelMenu_ExitClicked;
@@ -110,6 +113,7 @@ public class GameManager : MonoBehaviour
     }
 
     bool touchedBefore = false;
+    bool clickedMouseDownEver = false;
     float xBefore = 0;
     float yBefore = 0;
     Vector2 force = new Vector2();
@@ -125,6 +129,7 @@ public class GameManager : MonoBehaviour
         LevelMenu.SetSeconds(Seconds);
         if (Seconds > MaxLevelTime)
         {
+            Debug.Log("Lost by time");
             FinishGame(new GameFinishArgs { Win = false });
             return;
         }
@@ -134,9 +139,21 @@ public class GameManager : MonoBehaviour
         {
             xBefore = Input.mousePosition.x;
             yBefore = Input.mousePosition.y;
+            clickedMouseDownEver = true;
         }
-        else if (Input.GetMouseButtonUp(0))
+        else if (Input.GetMouseButton(0))
         {
+            float x = Input.mousePosition.x;
+            float y = Input.mousePosition.y;
+            force = new Vector2(xBefore - x, yBefore - y);
+            float finalForceMagnitude = Mathf.Clamp(force.magnitude * jumpForceMultiplier, 0, maxJumpForce);
+            Vector2 finalForce = force.normalized * finalForceMagnitude;
+            Debug.Log($"Force: {finalForce}");
+            player.Aim(finalForce);
+        }
+        else if (clickedMouseDownEver && Input.GetMouseButtonUp(0))
+        {
+            player.HideArrow();
             float x = Input.mousePosition.x;
             float y = Input.mousePosition.y;
             force = new Vector2(xBefore - x, yBefore - y);
@@ -148,22 +165,25 @@ public class GameManager : MonoBehaviour
         {
             touchedBefore = false;
             player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            player.Jump(force * forceMultiplier);
+            float finalForceMagnitude = Mathf.Clamp(force.magnitude * jumpForceMultiplier, 0, maxJumpForce);
+            Vector2 finalForce = force.normalized * finalForceMagnitude;
+            player.Jump(finalForce);
         }
     }
 
     public void PickedStar(Star.StarType starType)
     {
+        mainAudioSource.loop = false;
         if (starType == Star.StarType.Time)
         {
-            audioSource.clip = PickedBadStarAudioClip;
+            mainAudioSource.clip = PickedBadStarAudioClip;
         }
         else
         {
-            audioSource.clip = PickedStarAudioClip;
+            mainAudioSource.clip = PickedStarAudioClip;
 
         }
-        audioSource.Play();
+        mainAudioSource.Play();
     }
 
     private GameStatus oldStatus;
@@ -190,16 +210,25 @@ public class GameManager : MonoBehaviour
 
     void StartGame()
     {
+        PlayBackgroundMusic();
         gameStatus = GameStatus.Running;
         Time.timeScale = 1;
+    }
+
+    void PlayBackgroundMusic()
+    {
+        mainAudioSource.loop = true;
+        mainAudioSource.clip = BackgroundMusic;
+        mainAudioSource.Play();
     }
 
     public void FinishGame(GameFinishArgs gameFinishArgs)
     {
         gameStatus = GameStatus.Finished;
+        mainAudioSource.loop = false;
         if (gameFinishArgs.Win)
         {
-            audioSource.clip = GameFinishSuccessAudioClip;
+            mainAudioSource.clip = GameFinishSuccessAudioClip;
             if (LevelCount > Level)
             {
                 LevelMenu.ShowMenu(LevelMenu.MenuType.LevelFinishedMenu);
@@ -211,16 +240,16 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            audioSource.clip = GameFinishFailAudioClip;
+            mainAudioSource.clip = GameFinishFailAudioClip;
             LevelMenu.ShowMenu(LevelMenu.MenuType.LevelFailedMenu);
         }
         if (gameFinishArgs.DelayAudioClip != null)
         {
-            audioSource.PlayDelayed((int)gameFinishArgs.DelayAudioClip);
+            mainAudioSource.PlayDelayed((int)gameFinishArgs.DelayAudioClip);
         }
         else
         {
-            audioSource.Play();
+            mainAudioSource.Play();
         }
     }
 }

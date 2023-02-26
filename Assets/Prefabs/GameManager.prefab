@@ -45,13 +45,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LevelCount: 1
-  Level: 0
-  forceMultiplier: 2
+  Level: 1
+  jumpForceMultiplier: 5
+  maxJumpForce: 600
   GameFinishSuccessAudioClip: {fileID: 8300000, guid: 2f858ab422d15b3428669808f8e02d54, type: 3}
   GameFinishFailAudioClip: {fileID: 8300000, guid: d157d6a8b8f03644292f8cc32144c577, type: 3}
   PickedStarAudioClip: {fileID: 8300000, guid: 664420fdd92444540b513b915188479b, type: 3}
   PickedBadStarAudioClip: {fileID: 8300000, guid: e8c435e10a97d014d82ab1a1e9acc686, type: 3}
+  BackgroundMusic: {fileID: 8300000, guid: e436a9756f06ba2498d03c01883c6928, type: 3}
   FloorYLocation: -5
+  MaxLevelTime: 120
   gameStatus: 0
   platforms: []
   stars: []

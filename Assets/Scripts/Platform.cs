@@ -63,6 +63,7 @@ public class Platform : MonoBehaviour
                 }
                 break;
             case PlatformType.Glass:
+                Debug.Log("Lost by glass");
                 GameManager.FinishGame(new GameManager.GameFinishArgs { Win = false, DelayAudioClip = 35000 });
                 GameManager.player.GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
                 GetComponent<AudioSource>().Play();
