@@ -41,6 +41,14 @@ public class LevelMenu : MonoBehaviour
     [SerializeField]
     private GameObject HighScoreTextContainer;
 
+    //StartMenu
+    [SerializeField]
+    private GameObject StartMenuButtons;
+    [SerializeField]
+    private GameObject StartMenuLabel;
+    [SerializeField]
+    private GameObject StartMenuTutorialContainer;
+
     public event EventHandler StartClicked;
     public event EventHandler LoadCheckpointClicked;
     public event EventHandler ResumeClicked;
@@ -123,6 +131,28 @@ public class LevelMenu : MonoBehaviour
                 }
         }
         shownMenuType = menuType;
+    }
+
+    public void ShowTutorial()
+    {
+        StartMenuButtons.SetActive(false);
+        StartMenuLabel.SetActive(false);
+        StartMenuTutorialContainer.SetActive(true);
+        StartMenuTutorialContainer.transform.GetChild(0).gameObject.SetActive(true);
+    }
+
+    public void NextTutorial() {
+        StartMenuTutorialContainer.transform.GetChild(0).gameObject.SetActive(false);
+        StartMenuTutorialContainer.transform.GetChild(1).gameObject.SetActive(true);
+    }
+
+    public void HideTutorial()
+    {
+        StartMenuTutorialContainer.transform.GetChild(0).gameObject.SetActive(false);
+        StartMenuTutorialContainer.transform.GetChild(1).gameObject.SetActive(false);
+        StartMenuButtons.SetActive(true);
+        StartMenuLabel.SetActive(true);
+        StartMenuTutorialContainer.SetActive(false);
     }
 
     public void SetHighScore(float HighScore)
