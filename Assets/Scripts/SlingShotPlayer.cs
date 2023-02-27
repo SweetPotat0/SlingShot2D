@@ -73,7 +73,6 @@ public class SlingShotPlayer : MonoBehaviour
         JumpArrow.transform.localScale = new Vector2(direction.magnitude/280, JumpArrow.transform.localScale.y);
         direction.Normalize();
         float angle = -Vector2.SignedAngle(Vector2.right, direction.normalized);
-        Debug.Log($"Angle: {angle}");
         JumpArrow.transform.eulerAngles = new Vector3(JumpArrow.transform.eulerAngles.x, JumpArrow.transform.eulerAngles.y, angle);
     }
 

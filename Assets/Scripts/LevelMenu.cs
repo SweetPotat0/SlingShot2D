@@ -32,6 +32,8 @@ public class LevelMenu : MonoBehaviour
     private CanvasGroup LevelFailedMenu;
     [SerializeField]
     private CanvasGroup GameFinishedMenu;
+
+    //GUI
     [SerializeField]
     private TextMeshProUGUI GlobalSecondsText;
     [SerializeField]
@@ -39,8 +41,8 @@ public class LevelMenu : MonoBehaviour
     [SerializeField]
     private GameObject HighScoreTextContainer;
 
-    [HideInInspector]
     public event EventHandler StartClicked;
+    public event EventHandler LoadCheckpointClicked;
     public event EventHandler ResumeClicked;
     public event EventHandler NextLevelClicked;
     public event EventHandler ExitClicked;
@@ -149,6 +151,11 @@ public class LevelMenu : MonoBehaviour
     public void OnStartClick()
     {
         StartClicked.Invoke(this, null);
+    }
+
+    public void OnLoadCheckpoint()
+    {
+        LoadCheckpointClicked.Invoke(this, null);
     }
 
     public void OnResumeClick()

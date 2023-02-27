@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -65,7 +66,18 @@ public class GameManager : MonoBehaviour
         LevelMenu.NextLevelClicked += LevelMenu_NextLevelClicked;
         LevelMenu.ResumeClicked += LevelMenu_ResumeClicked;
         LevelMenu.StartClicked += LevelMenu_StartClicked;
+        LevelMenu.LoadCheckpointClicked += LevelMenu_LoadCheckpointClicked;
         LevelMenu.TryAgainClicked += LevelMenu_TryAgainClicked;
+
+        foreach (Star star in stars)
+        {
+            if (star.starType == Star.StarType.CheckPoint && stars.Where(curr => curr.starType == Star.StarType.CheckPoint &&
+           curr.CheckPointIndex == star.CheckPointIndex).Count() > 1)
+            {
+                throw new System.Exception($"Error: two checkpoints have the same index {star.CheckPointIndex}");
+            }
+        }
+
         InitGame();
     }
 
@@ -79,6 +91,20 @@ public class GameManager : MonoBehaviour
     {
         LevelMenu.HideMenu();
         StartGame();
+    }
+
+    private void LevelMenu_LoadCheckpointClicked(object sender, System.EventArgs e)
+    {
+        LevelMenu.HideMenu();
+        CheckPointHandler.CheckPoint checkPoint = CheckPointHandler.GetCheckPoint(Level);
+        foreach (Star star in stars)
+        {
+            if (star.starType == Star.StarType.CheckPoint && star.CheckPointIndex < checkPoint.Index)
+            {
+                Destroy(star.gameObject);
+            }
+        }
+        StartGame(checkPoint.Index, checkPoint.Time);
     }
 
     private void LevelMenu_ResumeClicked(object sender, System.EventArgs e)
@@ -150,7 +176,6 @@ public class GameManager : MonoBehaviour
             force = new Vector2(xBefore - x, yBefore - y);
             float finalForceMagnitude = Mathf.Clamp(force.magnitude * jumpForceMultiplier, 0, maxJumpForce);
             Vector2 finalForce = force.normalized * finalForceMagnitude;
-            Debug.Log($"Force: {finalForce}");
             player.Aim(finalForce);
         }
         else if (clickedMouseDownEver && Input.GetMouseButtonUp(0))
@@ -212,7 +237,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
     }
 
-    void StartGame()
+    void StartGame(int checkpointIndex = -1, float time = 0)
     {
         PlayBackgroundMusic();
         gameStatus = GameStatus.Running;
@@ -221,6 +246,16 @@ public class GameManager : MonoBehaviour
         if (highScore != -1)
         {
             LevelMenu.SetHighScore(highScore);
+        }
+
+        Debug.Log($"Got here: checkINde: {checkpointIndex}, time: {time}");
+        if (checkpointIndex != -1)
+        {
+            Star star = stars.Find(star => star.starType == Star.StarType.CheckPoint && star.CheckPointIndex == checkpointIndex);
+            Vector2 position = star.gameObject.transform.position;
+            Destroy(star.gameObject);
+            player.transform.position = position;
+            Seconds = time;
         }
     }
 
@@ -242,7 +277,7 @@ public class GameManager : MonoBehaviour
         mainCameraAudioSource.loop = false;
         if (gameFinishArgs.Win)
         {
-            HighScoreManager.StoreHighScore(Level,Seconds);
+            HighScoreManager.StoreHighScore(Level, Seconds);
             mainCameraAudioSource.clip = GameFinishSuccessAudioClip;
             if (LevelCount > Level)
             {

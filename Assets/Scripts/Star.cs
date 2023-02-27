@@ -8,11 +8,14 @@ public class Star : MonoBehaviour
     {
         Time,
         Sticky,
-        Bouncy
+        Bouncy,
+        CheckPoint
     }
 
     [SerializeField]
     public StarType starType;
+    [SerializeField]
+    public int CheckPointIndex = -1;
 
     private GameManager GameManager;
     private bool isEnabled = true;
@@ -23,6 +26,11 @@ public class Star : MonoBehaviour
         GameManager = FindObjectOfType<GameManager>();
         GameManager.stars.Add(this);
         animator = GetComponent<Animator>();
+
+        if (starType == StarType.CheckPoint && CheckPointIndex == -1)
+        {
+            throw new System.Exception("Error: checkpoint index not valid");
+        }
     }
 
     // Update is called once per frame
@@ -42,14 +50,25 @@ public class Star : MonoBehaviour
             switch (starType)
             {
                 case StarType.Time:
-                    GameManager.Seconds += 10;
-                    break;
+                    {
+                        GameManager.Seconds += 10;
+                        break;
+                    }
                 case StarType.Bouncy:
-                    GameManager.player.aboutTo = SlingShotPlayer.AboutTo.Bounce;
-                    break;
+                    {
+                        GameManager.player.aboutTo = SlingShotPlayer.AboutTo.Bounce;
+                        break;
+                    }
                 case StarType.Sticky:
-                    GameManager.player.aboutTo = SlingShotPlayer.AboutTo.Stick;
-                    break;
+                    {
+                        GameManager.player.aboutTo = SlingShotPlayer.AboutTo.Stick;
+                        break;
+                    }
+                case StarType.CheckPoint:
+                    {
+                        CheckPointHandler.SaveCheckPoint(GameManager.Level, CheckPointIndex, GameManager.Seconds);
+                        break;
+                    }
             }
             animator.SetTrigger("DestroyTrigger");
             Destroy(gameObject, 400);
