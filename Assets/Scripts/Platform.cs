@@ -59,7 +59,7 @@ public class Platform : MonoBehaviour
                 {
                     //Vector2 direction =  col.GetContact(0).point - (Vector2)GameManager.player.transform.position;
                     Debug.Log($"Normal is: {col.GetContact(0).normal}");
-                    GameManager.player.Jump(new Vector2(0, 500));
+                    GameManager.player.Jump(new Vector2(0, 300));
                 }
                 break;
             case PlatformType.Glass:

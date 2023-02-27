@@ -29,7 +29,7 @@ public class CheckPointHandler
     {
         Debug.Log($"Saving checkpoint: index:{checkpointIndex}, time:{time}, level: {levelNum}");
         CheckPoint checkpoint = GetCheckPoint(levelNum);
-        if (checkpoint.Index < checkpointIndex)
+        if (checkpoint.Index <= checkpointIndex)
         {
             PlayerPrefs.SetInt($"CheckPointIndex{levelNum}", checkpointIndex);
             PlayerPrefs.SetFloat($"CheckPointTime{levelNum}", time);
