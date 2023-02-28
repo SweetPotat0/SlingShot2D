@@ -49,6 +49,14 @@ public class LevelMenu : MonoBehaviour
     [SerializeField]
     private GameObject StartMenuTutorialContainer;
 
+    //Fail Menu
+    [SerializeField]
+    private TextMeshProUGUI LevelProgress;
+
+    //FinishLevel Menu
+    [SerializeField]
+    private TextMeshProUGUI LevelFinishRecord;
+
     public event EventHandler StartClicked;
     public event EventHandler LoadCheckpointClicked;
     public event EventHandler ResumeClicked;
@@ -59,7 +67,9 @@ public class LevelMenu : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        GameManager manager = FindObjectOfType<GameManager>();
+        StartMenuLabel.GetComponent<TextMeshProUGUI>().text = $"Level {manager.Level}";
+        LevelProgress.text = $"Level {manager.Level}/{GameManager.LevelCount}";
     }
 
     // Update is called once per frame
@@ -100,7 +110,7 @@ public class LevelMenu : MonoBehaviour
         }
     }
 
-    public void ShowMenu(MenuType menuType)
+    public void ShowMenu(MenuType menuType, bool brokeRecord = false)
     {
         switch (menuType)
         {
@@ -117,6 +127,10 @@ public class LevelMenu : MonoBehaviour
             case MenuType.LevelFinishedMenu:
                 {
                     ShowCanvasGroup(LevelFinishedMenu);
+                    if (brokeRecord)
+                    {
+                        LevelFinishRecord.gameObject.SetActive(true);
+                    }
                     break;
                 }
             case MenuType.LevelFailedMenu:
@@ -141,7 +155,8 @@ public class LevelMenu : MonoBehaviour
         StartMenuTutorialContainer.transform.GetChild(0).gameObject.SetActive(true);
     }
 
-    public void NextTutorial() {
+    public void NextTutorial()
+    {
         StartMenuTutorialContainer.transform.GetChild(0).gameObject.SetActive(false);
         StartMenuTutorialContainer.transform.GetChild(1).gameObject.SetActive(true);
     }

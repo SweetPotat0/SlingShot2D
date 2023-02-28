@@ -21,11 +21,18 @@ public class HighScoreManager
         }
     }
 
-    public static void StoreHighScore(int LevelNumber, float HighScore)
+    public static bool StoreHighScore(int LevelNumber, float HighScore)
     {
-        if (GetHighScore(LevelNumber) < HighScore)
+        float storedHighScore = GetHighScore(LevelNumber);
+        Debug.Log($"Stored is: {storedHighScore}, and curr is: {HighScore}");
+        if (storedHighScore == -1 || storedHighScore > HighScore)
         {
             PlayerPrefs.SetFloat($"HighScore{LevelNumber}", HighScore);
+            if (storedHighScore != -1)
+            {
+                return true;
+            }
         }
+        return false;
     }
 }

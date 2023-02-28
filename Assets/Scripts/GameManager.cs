@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Burst.Intrinsics;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,7 +21,7 @@ public class GameManager : MonoBehaviour
         Finished
     }
 
-    public int LevelCount = 1;
+    public static int LevelCount = 5;
     public int Level;
     public float jumpForceMultiplier = 5;
     public float maxJumpForce = 600;
@@ -31,6 +32,8 @@ public class GameManager : MonoBehaviour
     public AudioClip BackgroundMusic;
     public float FloorYLocation = -5;
     public float MaxLevelTime = 15;
+    public RuntimeAnimatorController FinishGameAnimator;
+    public Animator FinishGameAnimationContainer;
 
     [HideInInspector]
     public GameStatus gameStatus = GameStatus.Pause;
@@ -119,7 +122,7 @@ public class GameManager : MonoBehaviour
     {
         if (LevelCount > Level)
         {
-            SceneManager.LoadSceneAsync(Level);
+            SceneManager.LoadSceneAsync(Level + 1);
         }
         else
         {
@@ -154,7 +157,7 @@ public class GameManager : MonoBehaviour
             PauseGame();
         }
         Seconds += Time.deltaTime;
-        LevelMenu.SetSeconds(Seconds);
+        LevelMenu.SetSeconds(MaxLevelTime - Seconds);
         if (Seconds > MaxLevelTime)
         {
             Debug.Log("Lost by time");
@@ -277,15 +280,17 @@ public class GameManager : MonoBehaviour
         mainCameraAudioSource.loop = false;
         if (gameFinishArgs.Win)
         {
-            HighScoreManager.StoreHighScore(Level, Seconds);
+            bool brokeRecord = HighScoreManager.StoreHighScore(Level, Seconds);
             mainCameraAudioSource.clip = GameFinishSuccessAudioClip;
             if (LevelCount > Level)
             {
-                LevelMenu.ShowMenu(LevelMenu.MenuType.LevelFinishedMenu);
+                LevelMenu.ShowMenu(LevelMenu.MenuType.LevelFinishedMenu, brokeRecord);
             }
             else
             {
                 LevelMenu.ShowMenu(LevelMenu.MenuType.GameFinishedMenu);
+                FinishGameAnimationContainer.runtimeAnimatorController = FinishGameAnimator;
+                FinishGameAnimationContainer.SetTrigger("WinGame");
             }
         }
         else

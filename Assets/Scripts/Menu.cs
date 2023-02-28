@@ -7,9 +7,11 @@ public class Menu : MonoBehaviour
 {
     public GameObject Label;
     public GameObject Buttons;
+    public GameObject CreditsContainer;
     public GameObject StoryContainer;
     private int StorySlidesCount = 0;
     private int StorySlideIndex = 0;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -60,6 +62,20 @@ public class Menu : MonoBehaviour
         Debug.Log($"{StorySlideIndex} is not equal to {StorySlidesCount}");
         StoryContainer.transform.GetChild(StorySlideIndex).gameObject.SetActive(true);
         StorySlideIndex++;
+    }
+
+    public void ShowCredits()
+    {
+        Buttons.SetActive(false);
+        Label.SetActive(false);
+        CreditsContainer.SetActive(true);
+    }
+
+    public void HideCredits()
+    {
+        CreditsContainer.SetActive(false);
+        Buttons.SetActive(true);
+        Label.SetActive(true);
     }
 
     public void OnExitClick()
